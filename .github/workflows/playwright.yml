@@ -5,8 +5,19 @@ on:
 jobs:
   playwrighttests:
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.42.1-focal
+      env:
+         ADMIN_PASSWORD: ${{ secrets .ADMIN_PASSWORD }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Say Hello
-        run: echo Hello
+      - name: Run tests
+        run:  |
+          echo "Start the shopping store application"
+          chmod +x ./shopping-store-linux-amd64
+          ./shopping-store-linux-amd64 &
+          echo "Install dependencies from lockfile"
+          npm ci
+          echo "Run Playwright tests"
+          npm run test:ci
